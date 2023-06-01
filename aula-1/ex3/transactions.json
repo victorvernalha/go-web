@@ -1,0 +1,20 @@
+[
+    {
+        "id": "123",
+        "transactionCode": "aaa123",
+        "currency": "BRL",
+        "amount": 1000.50,
+        "sender": "Joaão",
+        "receiver": "Victor",
+        "date": "2022-08-01T00:00:00Z"
+    },
+    {
+        "id": "456",
+        "transactionCode": "bbb456",
+        "currency": "USD",
+        "amount": 255,
+        "sender": "Victor",
+        "receiver": "João",
+        "date": "2018-12-04T00:00:00Z"
+    }
+]
