@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"time"
 
@@ -42,7 +41,6 @@ func FindByID(c *gin.Context) {
 	}
 
 	target := c.Param("id")
-	fmt.Println("target is ", target)
 	for _, transaction := range transactions {
 		if transaction.ID == target {
 			c.JSON(200, transaction)
