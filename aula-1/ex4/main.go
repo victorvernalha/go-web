@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"net/url"
 	"os"
 	"time"
 
@@ -42,56 +43,43 @@ func Filter[T any](arr []T, predicate func(T) bool) (result []T) {
 	return
 }
 
-func MatchTransactionWithParameters(c *gin.Context) func(Transaction) bool {
-	// TODO...
-	return nil
+func ToMap[T any](s T) (mapped map[string]any) {
+	serialized, _ := json.Marshal(s)
+	json.Unmarshal(serialized, &mapped)
+	return
 }
 
-func SliceID(c *gin.Context) {
-	transactions, err := ReadTransactionFromJSON(TRANSACTIONS_FILE)
-	if err != nil {
-		c.Status(500)
-		return
+func GetFilterPredicate(params *url.Values) func(Transaction) bool {
+	return func(t Transaction) bool {
+		tMap := ToMap[Transaction](t)
+
+		matches := true
+		for key, value := range *params {
+			tVal, ok := tMap[key]
+			if ok {
+				matches = matches && (tVal == value[0])
+			}
+		}
+		return matches
 	}
-	filtered := []string{}
-	for _, transaction := range transactions {
-		filtered = append(filtered, transaction.ID)
-	}
-	c.JSON(200, filtered)
 }
 
-func SliceCurrency(c *gin.Context) {
+func FilterTransactions(c *gin.Context) {
 	transactions, err := ReadTransactionFromJSON(TRANSACTIONS_FILE)
 	if err != nil {
 		c.Status(500)
 		return
 	}
-	filtered := []string{}
-	for _, transaction := range transactions {
-		filtered = append(filtered, transaction.Currency)
-	}
-	c.JSON(200, filtered)
-}
-func SliceCode(c *gin.Context) {
-	transactions, err := ReadTransactionFromJSON(TRANSACTIONS_FILE)
-	if err != nil {
-		c.Status(500)
-		return
-	}
-	filtered := []string{}
-	for _, transaction := range transactions {
-		filtered = append(filtered, transaction.Code)
-	}
-	c.JSON(200, filtered)
+
+	params := c.Request.URL.Query()
+	filterPredicate := GetFilterPredicate(&params)
+	transactions = Filter[Transaction](transactions, filterPredicate)
+
+	c.JSON(200, gin.H{"data": transactions})
 }
 
 func main() {
 	router := gin.Default()
-	group := router.Group("/products")
-	{
-		group.GET("/id", SliceID)
-		group.GET("/code", SliceCode)
-		group.GET("/currency", SliceCurrency)
-	}
+	router.GET("/transactions", FilterTransactions)
 	router.Run()
 }
