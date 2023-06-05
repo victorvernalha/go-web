@@ -17,4 +17,6 @@ func main() {
 		group.GET("/", tHandler.GetAll())
 		group.POST("/", tHandler.Add())
 	}
+
+	router.Run()
 }
