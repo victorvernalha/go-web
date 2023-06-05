@@ -13,12 +13,12 @@ type Transactions struct {
 }
 
 type addTransactionRequest struct {
-	Code     string    `json:"transactionCode"`
-	Currency string    `json:"currency"`
-	Amount   float64   `json:"amount"`
-	Sender   string    `json:"sender"`
-	Receiver string    `json:"receiver"`
-	Date     time.Time `json:"date"`
+	Code     string    `binding:"required" json:"transactionCode"`
+	Currency string    `binding:"required" json:"currency"`
+	Amount   float64   `binding:"required" json:"amount"`
+	Sender   string    `binding:"required" json:"sender"`
+	Receiver string    `binding:"required" json:"receiver"`
+	Date     time.Time `binding:"required" json:"date"`
 }
 
 func (h *Transactions) Add() gin.HandlerFunc {
