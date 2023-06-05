@@ -24,8 +24,8 @@ type addTransactionRequest struct {
 func (h *Transactions) Add() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req addTransactionRequest
-		if err := c.Bind(&req); err != nil {
-			c.JSON(http.StatusBadRequest, err)
+		if err := c.ShouldBind(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
