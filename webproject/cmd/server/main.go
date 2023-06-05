@@ -17,6 +17,7 @@ func main() {
 		group.GET("/", tHandler.GetAll())
 		group.POST("/", tHandler.Add())
 		group.PUT("/:id", tHandler.Replace())
+		group.DELETE("/:id", tHandler.Delete())
 	}
 
 	router.Run()

@@ -84,3 +84,19 @@ func (h *Transactions) Replace() gin.HandlerFunc {
 		c.JSON(http.StatusOK, t)
 	}
 }
+
+func (h *Transactions) Delete() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		strId, _ := c.Params.Get("id")
+		id, err := strconv.ParseInt(strId, 10, 0)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Path parameter must be an integer"})
+		}
+		err = h.Service.Delete(int(id))
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Transaction does not exist"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{})
+	}
+}

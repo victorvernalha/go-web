@@ -9,6 +9,7 @@ type Repository interface {
 	GetAll() ([]Transaction, error)
 	Store(Transaction) error
 	Replace(Transaction) error
+	Delete(int) error
 }
 
 type InMemoryRepository struct {
@@ -20,7 +21,11 @@ func CreateInMemoryRepo() InMemoryRepository {
 }
 
 func (r *InMemoryRepository) exists(t *Transaction) (exists bool) {
-	_, exists = r.Ts[t.ID]
+	return r.existsID(t.ID)
+}
+
+func (r *InMemoryRepository) existsID(id int) (exists bool) {
+	_, exists = r.Ts[id]
 	return
 }
 
@@ -42,10 +47,22 @@ func (r *InMemoryRepository) Store(t Transaction) error {
 	return nil
 }
 
+func (r *InMemoryRepository) Delete(id int) error {
+	if !r.existsID(id) {
+		return IDDoesNotExistError(id)
+	}
+	delete(r.Ts, id)
+	return nil
+}
+
 func (r *InMemoryRepository) Replace(t Transaction) error {
 	if !r.exists(&t) {
-		return fmt.Errorf("transaction with ID %d does not exist", t.ID)
+		return IDDoesNotExistError(t.ID)
 	}
 	r.Ts[t.ID] = t
 	return nil
+}
+
+func IDDoesNotExistError(id int) error {
+	return fmt.Errorf("transaction with ID %d does not exist", id)
 }
