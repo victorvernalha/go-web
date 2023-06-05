@@ -1,10 +1,14 @@
 package transactions
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 type Repository interface {
 	GetAll() ([]Transaction, error)
 	Store(Transaction) error
+	Replace(Transaction) error
 }
 
 type InMemoryRepository struct {
@@ -33,6 +37,14 @@ func (r *InMemoryRepository) GetAll() ([]Transaction, error) {
 func (r *InMemoryRepository) Store(t Transaction) error {
 	if r.exists(&t) {
 		return errors.New("transaction already exists")
+	}
+	r.Ts[t.ID] = t
+	return nil
+}
+
+func (r *InMemoryRepository) Replace(t Transaction) error {
+	if !r.exists(&t) {
+		return fmt.Errorf("transaction with ID %d does not exist", t.ID)
 	}
 	r.Ts[t.ID] = t
 	return nil

@@ -8,6 +8,7 @@ import (
 type Service interface {
 	GetAll() ([]Transaction, error)
 	Create(code, currency, sender, receiver string, amount float64, date time.Time) (Transaction, error)
+	Replace(t Transaction) (Transaction, error)
 }
 
 type DefaultService struct {
@@ -31,6 +32,13 @@ func (s *DefaultService) Create(code, currency, sender, receiver string, amount 
 		return
 	}
 	return
+}
+
+func (s *DefaultService) Replace(t Transaction) (Transaction, error) {
+	if err := s.Repo.Replace(t); err != nil {
+		return t, err
+	}
+	return t, nil
 }
 
 func (s *DefaultService) generateNewID() (int, error) {

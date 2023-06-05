@@ -2,6 +2,8 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -25,13 +27,13 @@ func (h *Transactions) Add() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req addTransactionRequest
 		if err := c.ShouldBind(&req); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": strings.Split(err.Error(), "\n")})
 			return
 		}
 
 		t, err := h.Service.Create(req.Code, req.Currency, req.Sender, req.Receiver, req.Amount, req.Date)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -47,5 +49,38 @@ func (h *Transactions) GetAll() gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusCreated, ts)
+	}
+}
+
+func (h *Transactions) Replace() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		strId, _ := c.Params.Get("id")
+		id, err := strconv.ParseInt(strId, 10, 0)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Path parameter must be an integer"})
+		}
+
+		var req addTransactionRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": strings.Split(err.Error(), "\n")})
+			return
+		}
+
+		t := transactions.Transaction{
+			ID:       int(id),
+			Code:     req.Code,
+			Currency: req.Currency,
+			Amount:   req.Amount,
+			Sender:   req.Sender,
+			Receiver: req.Receiver,
+			Date:     req.Date,
+		}
+
+		t, err = h.Service.Replace(t)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": strings.Split(err.Error(), "\n")})
+			return
+		}
+		c.JSON(http.StatusOK, t)
 	}
 }
