@@ -43,7 +43,18 @@ func (s *DefaultService) Replace(t Transaction) (Transaction, error) {
 
 func (s *DefaultService) generateNewID() (int, error) {
 	if ts, err := s.Repo.GetAll(); err == nil {
-		return len(ts), nil
+		newId := 0
+		for _, t := range ts {
+			newId = Max(t.ID, newId) + 1
+		}
+		return newId, nil
 	}
 	return 0, errors.New("could not generate new ID")
+}
+
+func Max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
