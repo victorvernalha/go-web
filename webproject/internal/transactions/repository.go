@@ -9,7 +9,7 @@ type InMemoryRepository struct {
 	Ts []Transaction
 }
 
-func (r InMemoryRepository) GetAll() ([]Transaction, error) {
+func (r *InMemoryRepository) GetAll() ([]Transaction, error) {
 	return r.Ts, nil
 }
 
