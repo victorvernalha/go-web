@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	tRepo := transactions.InMemoryRepository{}
+	tRepo := transactions.CreateInMemoryRepo()
 	tService := transactions.DefaultService{Repo: &tRepo}
 	tHandler := handler.Transactions{Service: &tService}
 
@@ -16,6 +16,7 @@ func main() {
 	{
 		group.GET("/", tHandler.GetAll())
 		group.POST("/", tHandler.Add())
+		group.PUT("/:id", tHandler.Replace())
 	}
 
 	router.Run()

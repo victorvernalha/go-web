@@ -11,6 +11,15 @@ type InMemoryRepository struct {
 	Ts map[int]Transaction
 }
 
+func CreateInMemoryRepo() InMemoryRepository {
+	return InMemoryRepository{make(map[int]Transaction)}
+}
+
+func (r *InMemoryRepository) exists(t *Transaction) (exists bool) {
+	_, exists = r.Ts[t.ID]
+	return
+}
+
 func (r *InMemoryRepository) GetAll() ([]Transaction, error) {
 	ts := []Transaction{}
 
@@ -22,7 +31,7 @@ func (r *InMemoryRepository) GetAll() ([]Transaction, error) {
 }
 
 func (r *InMemoryRepository) Store(t Transaction) error {
-	if _, exists := r.Ts[t.ID]; exists {
+	if r.exists(&t) {
 		return errors.New("transaction already exists")
 	}
 	r.Ts[t.ID] = t
