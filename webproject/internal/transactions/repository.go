@@ -1,19 +1,30 @@
 package transactions
 
+import "errors"
+
 type Repository interface {
 	GetAll() ([]Transaction, error)
 	Store(Transaction) error
 }
 
 type InMemoryRepository struct {
-	Ts []Transaction
+	Ts map[int]Transaction
 }
 
 func (r *InMemoryRepository) GetAll() ([]Transaction, error) {
-	return r.Ts, nil
+	ts := []Transaction{}
+
+	for _, t := range r.Ts {
+		ts = append(ts, t)
+	}
+
+	return ts, nil
 }
 
 func (r *InMemoryRepository) Store(t Transaction) error {
-	r.Ts = append(r.Ts, t)
+	if _, exists := r.Ts[t.ID]; exists {
+		return errors.New("transaction already exists")
+	}
+	r.Ts[t.ID] = t
 	return nil
 }
