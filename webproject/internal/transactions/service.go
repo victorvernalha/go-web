@@ -3,6 +3,8 @@ package transactions
 import (
 	"errors"
 	"time"
+
+	"github.com/victorvernalha/go-web/pkg/utils"
 )
 
 type Service interface {
@@ -72,17 +74,9 @@ func (s *DefaultService) generateNewID() (int, error) {
 	if ts, err := s.Repo.GetAll(); err == nil {
 		newId := 0
 		for _, t := range ts {
-			newId = Max(t.ID, newId) + 1
+			newId = utils.Max(t.ID, newId) + 1
 		}
 		return newId, nil
 	}
 	return 0, errors.New("could not generate new ID")
-}
-
-// TODO: move to /pkg directory
-func Max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
 }
