@@ -37,5 +37,5 @@ func main() {
 		group.PATCH("/:id", middleware.JSONMapper[handler.UpdateRequest](), tHandler.Update())
 	}
 
-	router.Run()
+	router.Run("127.0.0.1:8080")
 }
