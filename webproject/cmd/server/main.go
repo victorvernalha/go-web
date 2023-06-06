@@ -30,10 +30,10 @@ func main() {
 	{
 		group.Use(tokenValidator)
 		group.GET("/", tHandler.GetAll())
-		group.POST("/", tHandler.Add())
-		group.PUT("/:id", tHandler.Replace())
+		group.POST("/", middleware.JSONMapper[handler.AddRequest](), tHandler.Add())
+		group.PUT("/:id", middleware.JSONMapper[handler.AddRequest](), tHandler.Replace())
 		group.DELETE("/:id", tHandler.Delete())
-		group.PATCH("/:id", tHandler.Update())
+		group.PATCH("/:id", middleware.JSONMapper[handler.UpdateRequest](), tHandler.Update())
 	}
 
 	router.Run()

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/victorvernalha/go-web/webproject/cmd/server/middleware"
 	"github.com/victorvernalha/go-web/webproject/internal/transactions"
 )
 
@@ -14,7 +15,7 @@ type Transactions struct {
 	Service transactions.Service
 }
 
-type addTransactionRequest struct {
+type AddRequest struct {
 	Code     string    `binding:"required" json:"transactionCode"`
 	Currency string    `binding:"required" json:"currency"`
 	Amount   float64   `binding:"required" json:"amount"`
@@ -23,18 +24,14 @@ type addTransactionRequest struct {
 	Date     time.Time `binding:"required" json:"date"`
 }
 
-type updateTransactionRequest struct {
+type UpdateRequest struct {
 	Code   string  `binding:"required" json:"transactionCode"`
 	Amount float64 `binding:"required" json:"amount"`
 }
 
 func (h *Transactions) Add() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var req addTransactionRequest
-		if err := c.ShouldBind(&req); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": strings.Split(err.Error(), "\n")})
-			return
-		}
+		req := middleware.ParsedRequest[AddRequest](c)
 
 		t, err := h.Service.Create(req.Code, req.Currency, req.Sender, req.Receiver, req.Amount, req.Date)
 		if err != nil {
@@ -66,12 +63,7 @@ func (h *Transactions) Replace() gin.HandlerFunc {
 			return
 		}
 
-		var req addTransactionRequest
-		if err := c.ShouldBindJSON(&req); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": strings.Split(err.Error(), "\n")})
-			return
-		}
-
+		req := middleware.ParsedRequest[AddRequest](c)
 		t := transactions.Transaction{
 			ID:       int(id),
 			Code:     req.Code,
@@ -117,11 +109,7 @@ func (h *Transactions) Update() gin.HandlerFunc {
 			return
 		}
 
-		var req updateTransactionRequest
-		if err := c.ShouldBind(&req); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
+		req := middleware.ParsedRequest[UpdateRequest](c)
 
 		t, err := h.Service.Update(int(id), req.Code, req.Amount)
 		if err != nil {
