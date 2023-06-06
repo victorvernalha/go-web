@@ -12,6 +12,7 @@ import (
 
 const API_KEY_NAME = "API_KEY"
 const API_KEY_HEADER = "authorization"
+const JSON_FILE = "data/transactions.json"
 
 func main() {
 	err := godotenv.Load()
@@ -19,7 +20,7 @@ func main() {
 		panic("Could not load .env file")
 	}
 
-	tRepo := transactions.CreateInMemoryRepo()
+	tRepo := transactions.CreateJSONRepo(JSON_FILE)
 	tService := transactions.DefaultService{Repo: &tRepo}
 	tHandler := handler.Transactions{Service: &tService}
 
