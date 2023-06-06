@@ -30,14 +30,16 @@ type UpdateRequest struct {
 	Amount float64 `binding:"required" json:"amount"`
 }
 
-// AddTransaction godoc
+// Add godoc
 //
 //	@Summary	Add new transaction
+//	@Tags		Transactions
 //	@Accept		json
 //	@Produce	json
-//	@Param		authorization	header		string		true	"Authentication token"
-//	@Param		transaction		body		AddRequest	true	"Transaction to be added"
-//	@Success	200				{object}	responses.Response
+//	@Param		authorization	header		string				true	"Authentication token"
+//	@Param		transaction		body		AddRequest			true	"Transaction to be added"
+//	@Success	200				{object}	responses.Response	"Returns updated transaction"
+//	@Failure	500				{object}	responses.Response	"Could not save transaction"
 //	@Router		/transactions [post]
 func (h *Transactions) Add() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -53,6 +55,16 @@ func (h *Transactions) Add() gin.HandlerFunc {
 	}
 }
 
+// GetAll godoc
+//
+//	@Summary	Get all transactions
+//	@Tags		Transactions
+//	@Accept		json
+//	@Produce	json
+//	@Param		authorization	header		string	true	"Authentication token"
+//	@Success	200				{object}	responses.Response
+//	@Failure	500				{object}	responses.Response	"Could not fetch transactions"
+//	@Router		/transactions [get]
 func (h *Transactions) GetAll() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ts, err := h.Service.GetAll()
@@ -64,6 +76,21 @@ func (h *Transactions) GetAll() gin.HandlerFunc {
 	}
 }
 
+// Replace godoc
+//
+//	@Summary	Replaces given transaction
+//	@Tags		Transactions
+//	@Accept		json
+//	@Produce	json
+//	@Param		authorization	header		string				true	"Authentication token"
+//	@Param		id				path		int					true	"Transaction ID"
+//	@Param		trnsaction		body		AddRequest			true	"Updated transaction"
+//	@Success	200				{object}	responses.Response	"Returns updated transaction"
+//	@Failure	400				{object}	responses.Response	"Path parameter is not an int"
+//	@Failure	400				{object}	responses.Response	"Missing or invalid transaction parameters"
+//	@Failure	500				{object}	responses.Response	"Given ID does not exist"
+//	@Failure	500				{object}	responses.Response	"Could not replace transaction"
+//	@Router		/transactions/:id [put]
 func (h *Transactions) Replace() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, err := validateIntPathParam(c, "id")
@@ -91,6 +118,18 @@ func (h *Transactions) Replace() gin.HandlerFunc {
 	}
 }
 
+// Delete godoc
+//
+//	@Summary	Get all transactions
+//	@Tags		Transactions
+//	@Accept		json
+//	@Produce	json
+//	@Param		authorization	header		string	true	"Authentication token"
+//	@Param		id				path		int		true	"Transaction ID"
+//	@Success	200				{object}	responses.Response
+//	@Failure	400				{object}	responses.Response	"Path parameter is not an int"
+//	@Failure	404				{object}	responses.Response	"Could not find given transaction"
+//	@Router		/transactions [delete]
 func (h *Transactions) Delete() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, err := validateIntPathParam(c, "id")
@@ -107,6 +146,22 @@ func (h *Transactions) Delete() gin.HandlerFunc {
 	}
 }
 
+// Update godoc
+//
+//	@Summary	Updates given transaction
+//	@Tags		Transactions
+//	@Accept		json
+//	@Produce	json
+//	@Param		authorization	header		string				true	"Authentication token"
+//	@Param		id				path		int					true	"Transaction ID"
+//	@Param		transactionCode	body		string				true	"New transaction code"
+//	@Param		amount			body		number				true	"New transaction amount"
+//	@Success	200				{object}	responses.Response	"Returns updated transaction"
+//	@Failure	400				{object}	responses.Response	"Path parameter is not an int"
+//	@Failure	400				{object}	responses.Response	"Missing or invalid transaction parameters"
+//	@Failure	400				{object}	responses.Response	"Given ID does not exist"
+//	@Failure	400				{object}	responses.Response	"Could not replace transaction"
+//	@Router		/transactions/:id [patch]
 func (h *Transactions) Update() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, err := validateIntPathParam(c, "id")

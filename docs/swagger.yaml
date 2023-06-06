@@ -34,6 +34,61 @@ info:
   version: "1.0"
 paths:
   /transactions:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "400":
+          description: Path parameter is not an int
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "404":
+          description: Could not find given transaction
+          schema:
+            $ref: '#/definitions/responses.Response'
+      summary: Get all transactions
+      tags:
+      - Transactions
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "500":
+          description: Could not fetch transactions
+          schema:
+            $ref: '#/definitions/responses.Response'
+      summary: Get all transactions
+      tags:
+      - Transactions
     post:
       consumes:
       - application/json
@@ -53,8 +108,93 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Returns updated transaction
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "500":
+          description: Could not save transaction
           schema:
             $ref: '#/definitions/responses.Response'
       summary: Add new transaction
+      tags:
+      - Transactions
+  /transactions/:id:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: New transaction code
+        in: body
+        name: transactionCode
+        required: true
+        schema:
+          type: string
+      - description: New transaction amount
+        in: body
+        name: amount
+        required: true
+        schema:
+          type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns updated transaction
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "400":
+          description: Could not replace transaction
+          schema:
+            $ref: '#/definitions/responses.Response'
+      summary: Updates given transaction
+      tags:
+      - Transactions
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated transaction
+        in: body
+        name: trnsaction
+        required: true
+        schema:
+          $ref: '#/definitions/handler.AddRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns updated transaction
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "400":
+          description: Missing or invalid transaction parameters
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "500":
+          description: Could not replace transaction
+          schema:
+            $ref: '#/definitions/responses.Response'
+      summary: Replaces given transaction
+      tags:
+      - Transactions
 swagger: "2.0"
