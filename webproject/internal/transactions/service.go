@@ -10,6 +10,7 @@ type Service interface {
 	Create(code, currency, sender, receiver string, amount float64, date time.Time) (Transaction, error)
 	Replace(t Transaction) (Transaction, error)
 	Delete(id int) error
+	Update(id int, transactionCode string, value float64) (t Transaction, err error)
 }
 
 type DefaultService struct {
@@ -30,6 +31,24 @@ func (s *DefaultService) Create(code, currency, sender, receiver string, amount 
 	err = s.Repo.Store(t)
 	if err != nil {
 		err = errors.New("error saving new transaction")
+		return
+	}
+	return
+}
+
+func (s *DefaultService) Update(id int, transactionCode string, value float64) (t Transaction, err error) {
+
+	t, err = s.Repo.Find(id)
+	if err != nil {
+		return
+	}
+
+	t.Code = transactionCode
+	t.Amount = value
+
+	err = s.Repo.Replace(t)
+	if err != nil {
+		err = errors.New("error updating transaction")
 		return
 	}
 	return
@@ -60,6 +79,7 @@ func (s *DefaultService) generateNewID() (int, error) {
 	return 0, errors.New("could not generate new ID")
 }
 
+// TODO: move to /pkg directory
 func Max(a, b int) int {
 	if a > b {
 		return a

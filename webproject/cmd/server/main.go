@@ -18,6 +18,7 @@ func main() {
 		group.POST("/", tHandler.Add())
 		group.PUT("/:id", tHandler.Replace())
 		group.DELETE("/:id", tHandler.Delete())
+		group.PATCH("/:id", tHandler.Update())
 	}
 
 	router.Run()

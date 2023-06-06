@@ -9,6 +9,7 @@ type Repository interface {
 	GetAll() ([]Transaction, error)
 	Store(Transaction) error
 	Replace(Transaction) error
+	Find(int) (Transaction, error)
 	Delete(int) error
 }
 
@@ -61,6 +62,13 @@ func (r *InMemoryRepository) Replace(t Transaction) error {
 	}
 	r.Ts[t.ID] = t
 	return nil
+}
+
+func (r *InMemoryRepository) Find(id int) (Transaction, error) {
+	if !r.existsID(id) {
+		return Transaction{}, IDDoesNotExistError(id)
+	}
+	return r.Ts[id], nil
 }
 
 func IDDoesNotExistError(id int) error {

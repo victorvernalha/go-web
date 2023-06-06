@@ -23,6 +23,11 @@ type addTransactionRequest struct {
 	Date     time.Time `binding:"required" json:"date"`
 }
 
+type updateTransactionRequest struct {
+	Code   string  `binding:"required" json:"transactionCode"`
+	Amount float64 `binding:"required" json:"amount"`
+}
+
 func (h *Transactions) Add() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req addTransactionRequest
@@ -58,6 +63,7 @@ func (h *Transactions) Replace() gin.HandlerFunc {
 		id, err := strconv.ParseInt(strId, 10, 0)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Path parameter must be an integer"})
+			return
 		}
 
 		var req addTransactionRequest
@@ -91,6 +97,7 @@ func (h *Transactions) Delete() gin.HandlerFunc {
 		id, err := strconv.ParseInt(strId, 10, 0)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Path parameter must be an integer"})
+			return
 		}
 		err = h.Service.Delete(int(id))
 		if err != nil {
@@ -98,5 +105,29 @@ func (h *Transactions) Delete() gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{})
+	}
+}
+
+func (h *Transactions) Update() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		strId, _ := c.Params.Get("id")
+		id, err := strconv.ParseInt(strId, 10, 0)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Path parameter must be an integer"})
+			return
+		}
+
+		var req updateTransactionRequest
+		if err := c.ShouldBind(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		t, err := h.Service.Update(int(id), req.Code, req.Amount)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, t)
 	}
 }
