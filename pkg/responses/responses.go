@@ -17,6 +17,6 @@ func Success(c *gin.Context, code int, data any) {
 }
 
 func Error(c *gin.Context, code int, err error) {
-	res := response{0, err.Error()}
+	res := response{nil, err.Error()}
 	c.JSON(code, res)
 }
