@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/victorvernalha/go-web/webproject/cmd/server/middleware"
+	"github.com/victorvernalha/go-web/pkg/middleware"
 	"github.com/victorvernalha/go-web/webproject/internal/transactions"
 )
 

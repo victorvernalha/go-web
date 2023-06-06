@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/victorvernalha/go-web/pkg/middleware"
 	"github.com/victorvernalha/go-web/webproject/cmd/server/handler"
-	"github.com/victorvernalha/go-web/webproject/cmd/server/middleware"
 	"github.com/victorvernalha/go-web/webproject/internal/transactions"
 )
 
