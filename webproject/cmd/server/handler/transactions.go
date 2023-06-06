@@ -1,13 +1,14 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/victorvernalha/go-web/pkg/middleware"
+	"github.com/victorvernalha/go-web/pkg/responses"
 	"github.com/victorvernalha/go-web/webproject/internal/transactions"
 )
 
@@ -35,11 +36,11 @@ func (h *Transactions) Add() gin.HandlerFunc {
 
 		t, err := h.Service.Create(req.Code, req.Currency, req.Sender, req.Receiver, req.Amount, req.Date)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			responses.Error(c, http.StatusInternalServerError, err)
 			return
 		}
 
-		c.JSON(http.StatusCreated, t)
+		responses.Success(c, http.StatusCreated, t)
 	}
 }
 
@@ -47,19 +48,17 @@ func (h *Transactions) GetAll() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ts, err := h.Service.GetAll()
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, err)
+			responses.Error(c, http.StatusInternalServerError, err)
 			return
 		}
-		c.JSON(http.StatusCreated, ts)
+		responses.Success(c, http.StatusCreated, ts)
 	}
 }
 
 func (h *Transactions) Replace() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		strId, _ := c.Params.Get("id")
-		id, err := strconv.ParseInt(strId, 10, 0)
+		id, err := validateIntPathParam(c, "id")
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Path parameter must be an integer"})
 			return
 		}
 
@@ -76,36 +75,33 @@ func (h *Transactions) Replace() gin.HandlerFunc {
 
 		t, err = h.Service.Replace(t)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": strings.Split(err.Error(), "\n")})
+			responses.Error(c, http.StatusInternalServerError, err)
 			return
 		}
-		c.JSON(http.StatusOK, t)
+		responses.Success(c, http.StatusOK, t)
 	}
 }
 
 func (h *Transactions) Delete() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		strId, _ := c.Params.Get("id")
-		id, err := strconv.ParseInt(strId, 10, 0)
+		id, err := validateIntPathParam(c, "id")
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Path parameter must be an integer"})
 			return
 		}
+
 		err = h.Service.Delete(int(id))
 		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Transaction does not exist"})
+			responses.Error(c, http.StatusNotFound, err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{})
+		responses.SuccessNoData(c, http.StatusOK)
 	}
 }
 
 func (h *Transactions) Update() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		strId, _ := c.Params.Get("id")
-		id, err := strconv.ParseInt(strId, 10, 0)
+		id, err := validateIntPathParam(c, "id")
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Path parameter must be an integer"})
 			return
 		}
 
@@ -113,9 +109,22 @@ func (h *Transactions) Update() gin.HandlerFunc {
 
 		t, err := h.Service.Update(int(id), req.Code, req.Amount)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			responses.Error(c, http.StatusBadRequest, err)
 			return
 		}
-		c.JSON(http.StatusOK, t)
+
+		responses.Success(c, http.StatusOK, t)
 	}
+}
+
+func validateIntPathParam(c *gin.Context, param string) (val int, err error) {
+	strParam, _ := c.Params.Get(param)
+	val64, err := strconv.ParseInt(strParam, 10, 0)
+	if err != nil {
+		err = fmt.Errorf("invalid path parameter %s; expected int", strParam)
+		responses.Error(c, http.StatusBadRequest, err)
+		return
+	}
+	val = int(val64)
+	return
 }
