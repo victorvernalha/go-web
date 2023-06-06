@@ -1,0 +1,90 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "CRUD application for simple transactions",
+        "title": "Transactions API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/transactions": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Add new transaction",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication token",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Transaction to be added",
+                        "name": "transaction",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.AddRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "handler.AddRequest": {
+            "type": "object",
+            "required": [
+                "amount",
+                "currency",
+                "date",
+                "receiver",
+                "sender",
+                "transactionCode"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "receiver": {
+                    "type": "string"
+                },
+                "sender": {
+                    "type": "string"
+                },
+                "transactionCode": {
+                    "type": "string"
+                }
+            }
+        },
+        "responses.Response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

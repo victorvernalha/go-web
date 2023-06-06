@@ -1,0 +1,60 @@
+definitions:
+  handler.AddRequest:
+    properties:
+      amount:
+        type: number
+      currency:
+        type: string
+      date:
+        type: string
+      receiver:
+        type: string
+      sender:
+        type: string
+      transactionCode:
+        type: string
+    required:
+    - amount
+    - currency
+    - date
+    - receiver
+    - sender
+    - transactionCode
+    type: object
+  responses.Response:
+    properties:
+      data: {}
+      error:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: CRUD application for simple transactions
+  title: Transactions API
+  version: "1.0"
+paths:
+  /transactions:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: Transaction to be added
+        in: body
+        name: transaction
+        required: true
+        schema:
+          $ref: '#/definitions/handler.AddRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.Response'
+      summary: Add new transaction
+swagger: "2.0"

@@ -30,6 +30,15 @@ type UpdateRequest struct {
 	Amount float64 `binding:"required" json:"amount"`
 }
 
+// AddTransaction godoc
+//
+//	@Summary	Add new transaction
+//	@Accept		json
+//	@Produce	json
+//	@Param		authorization	header		string		true	"Authentication token"
+//	@Param		transaction		body		AddRequest	true	"Transaction to be added"
+//	@Success	200				{object}	responses.Response
+//	@Router		/transactions [post]
 func (h *Transactions) Add() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		req := middleware.ParsedRequest[AddRequest](c)

@@ -2,7 +2,7 @@ package responses
 
 import "github.com/gin-gonic/gin"
 
-type response struct {
+type Response struct {
 	Data  any    `json:"data,omitempty"`
 	Error string `json:"error,omitempty"`
 }
@@ -12,11 +12,11 @@ func SuccessNoData(c *gin.Context, code int) {
 }
 
 func Success(c *gin.Context, code int, data any) {
-	res := response{data, ""}
+	res := Response{data, ""}
 	c.JSON(code, res)
 }
 
 func Error(c *gin.Context, code int, err error) {
-	res := response{nil, err.Error()}
+	res := Response{nil, err.Error()}
 	c.JSON(code, res)
 }
